@@ -3,6 +3,7 @@ const app = require('../app.js');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
 const data = require('../db/data/test-data');
+const jsonFile = require('../endpoints.json')
 
 beforeAll(() => seed(data));
 afterAll(() => db.end());
@@ -33,4 +34,16 @@ describe('error handling()', () => {
         });
     });
       
-  });
+});
+  
+describe('getApis()', () => {
+    test("return Json object with all apis endpoint in file ", ()=>{
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body.dataApi)
+          expect(body.dataApi).toEqual(jsonFile)
+      })
+   })
+  })
