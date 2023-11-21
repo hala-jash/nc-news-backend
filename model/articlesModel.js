@@ -24,8 +24,8 @@ exports.selectArticleById = (article_id) => {
     if (sort_by && order && validSortBy.includes(sort_by) && validOrder.includes(order)) {
         queryString += `ORDER BY ${sort_by} ${order}`;
     }
-
     return db.query(queryString).then(({ rows }) => {
         return rows;
     })
 };
+
