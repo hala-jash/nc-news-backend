@@ -8,7 +8,7 @@ const jsonFile = require('../endpoints.json');
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 
-describe('selectTopics()', () => {
+describe('/api/topics', () => {
   test('Selecting all Topics', () => {
     return request(app)
       .get('/api/topics')
@@ -32,7 +32,7 @@ describe('error handlingTopics()', () => {
       });
   });
 });
-describe('getApis()', () => {
+describe('/api', () => {
   test('return Json object with all apis endpoint in file ', () => {
     return request(app)
       .get('/api')
@@ -55,17 +55,17 @@ describe('/api/articles/:article_id', () => {
           author: expect.any(String),
           body: expect.any(String),
           created_at: expect.any(String),
-          article_img_url:
-          expect.any(String),
+          article_img_url: expect.any(String),
         });
       });
   });
+
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
     return request(app)
       .get('/api/articles/999')
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe('article does not exist');
+        expect(response.body.msg).toBe('Not Found');
       });
   });
   test('GET:400 sends an appropriate status and error message when article_id is invalid', () => {
@@ -76,5 +76,28 @@ describe('/api/articles/:article_id', () => {
         expect(response.body.msg).toBe('Bad request');
       });
   });
+});
 
+describe('/api/articles', () => {
+  test('Selecting all Articles with default date in DESC order', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles).toBeSortedBy('created_at', { descending: true });
+      });
+  });
+
+
+  describe('404: error handling', () => {
+    test('returns an error with invalid endpoint', () => {
+      return request(app)
+        .get('/api/blah')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found');
+        });
+    });
+  });
 });
