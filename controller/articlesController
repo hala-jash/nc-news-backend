@@ -1,19 +1,38 @@
-const { selectArticleById , selectArticles} = require("../model/articlesModel");
+const {
+  selectArticleById,
+  selectArticles,
+  selectArticleComment,
+} = require('../model/articlesModel');
+const { checkArticleExist } = require('../model/checkArticleModel');
 
 exports.getArticleById = (req, res, next) => {
-    const { article_id } = req.params;
-    selectArticleById(article_id)
-      .then((article) => {
-        res.status(200).send({ article });
-      })
-      .catch(next);
-  };
+  const { article_id } = req.params;
+  selectArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch(next);
+};
 
-  exports.getArticles = (req, res, next) => {
-    const {sort_by, order} = req.query
-  selectArticles(sort_by,order)
+exports.getArticles = (req, res, next) => {
+  const { sort_by, order } = req.query;
+  selectArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
+    })
+    .catch(next);
+};
+
+exports.getArticleComments = (req, res, next) => {
+  const { article_id } = req.params;
+  const articlesPromises = [selectArticleComment(article_id)];
+  if (article_id) {
+    articlesPromises.push(checkArticleExist(article_id));
+  }
+  Promise.all(articlesPromises)
+    .then((resolvedPromises) => {
+      const comments = resolvedPromises[0];
+      res.status(200).send({ comments });
     })
     .catch(next);
 };

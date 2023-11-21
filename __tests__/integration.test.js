@@ -8,7 +8,7 @@ const jsonFile = require('../endpoints.json');
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 
-describe('/api/topics', () => {
+describe('selectTopics()', () => {
   test('Selecting all Topics', () => {
     return request(app)
       .get('/api/topics')
@@ -16,23 +16,24 @@ describe('/api/topics', () => {
       .then(({ body }) => {
         expect(body.topics).toHaveLength(3);
         expect(body.topics[0]).toMatchObject({
-          slug: expect.any(String),
-          description: expect.any(String),
+          slug: 'mitch',
+          description: 'The man, the Mitch, the legend',
         });
       });
   });
-});
-describe('error handlingTopics()', () => {
-  test('returns an error with invalid endpoint', () => {
-    return request(app)
-      .get('/api/topic')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe('Not Found');
-      });
+  describe('error handling()', () => {
+    test('returns an error with invalid endpoint', () => {
+      return request(app)
+        .get('/api/topic')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found');
+        });
+    });
   });
 });
-describe('/api', () => {
+
+describe('getApis()', () => {
   test('return Json object with all apis endpoint in file ', () => {
     return request(app)
       .get('/api')
@@ -59,7 +60,6 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
     return request(app)
       .get('/api/articles/999')
@@ -78,7 +78,7 @@ describe('/api/articles/:article_id', () => {
   });
 });
 
-describe('/api/articles', () => {
+describe('selectArticles()', () => {
   test('Selecting all Articles with default date in DESC order', () => {
     return request(app)
       .get('/api/articles')
@@ -88,8 +88,6 @@ describe('/api/articles', () => {
         expect(body.articles).toBeSortedBy('created_at', { descending: true });
       });
   });
-
-
   describe('404: error handling', () => {
     test('returns an error with invalid endpoint', () => {
       return request(app)
@@ -99,5 +97,50 @@ describe('/api/articles', () => {
           expect(body.msg).toBe('Not Found');
         });
     });
+  });
+});
+
+describe('/api/articles/:article_id/comments', () => {
+  test('respond with a 200 status code with an individual comment object ', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toHaveLength(11);
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            comment_id: expect.any(Number),
+            article_id: expect.any(Number),
+            votes: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('GET:400 sends an appropriate status and error message when article_id is invalid', () => {
+    return request(app)
+      .get('/api/articles/apple/comments')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    return request(app)
+      .get('/api/articles/200/comments')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+  test('200: responds with empty array if article_id exist but ther are no comments with the article_id', () => {
+    return request(app)
+      .get('/api/articles/10/comments')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
   });
 });

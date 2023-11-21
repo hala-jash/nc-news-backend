@@ -13,10 +13,11 @@ const { getArticleById , getArticles} = require('./controller/articlesController
 app.get('/api/topics', getTopics);
 app.get('/api', getApis);
 app.get('/api/articles/:article_id', getArticleById);
-
+const { getArticleComments } = require('./controller/articlesController');
 
 
 app.get('/api/articles', getArticles);
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);
