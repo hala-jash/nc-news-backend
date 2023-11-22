@@ -10,28 +10,28 @@ const { getTopics } = require('./controller/topicController');
 const { getApis } = require('./controller/apiController');
 const { getArticleById } = require('./controller/articlesController');
 const { getArticles } = require('./controller/articlesController');
-const { getArticleComments} = require('./controller/articlesController');
+const { getArticleComments } = require('./controller/articlesController');
 const { postArticleComments } = require('./controller/articlesController');
+const { patchArticle } = require('./controller/articlesController');
 
 app.use(express.json());
 
 app.get('/api/topics', getTopics);
 
-app.get('/api', getApis)
+app.get('/api', getApis);
 
 app.get('/api/articles', getArticles);
 
-app.get("/api/articles/:article_id",getArticleById);
+app.get('/api/articles/:article_id', getArticleById);
 
-app.get("/api/articles/:article_id/comments", getArticleComments);
+app.get('/api/articles/:article_id/comments', getArticleComments);
 
-app.post("/api/articles/:article_id/comments", postArticleComments);
+app.post('/api/articles/:article_id/comments', postArticleComments);
+app.patch('/api/articles/:article_id', patchArticle);
 
-app.all('*',handle404)
+app.all('*', handle404);
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);
 app.use(handle500);
-
-
 
 module.exports = app;
