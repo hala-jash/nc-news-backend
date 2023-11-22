@@ -156,8 +156,9 @@ describe('post:/api/articles/:article_id/comments', () => {
       .expect(201)
       .then(({ body }) => {
         expect(body.comment).toMatchObject({
-          author: expect.any(String),
-          body: expect.any(String),
+          author: 'butter_bridge',
+          body: 'One day I will be a great Coder leaving the world better with my coding skills',
+          comment_id: expect.any(Number),
         });
       });
   });
@@ -183,6 +184,71 @@ describe('post:/api/articles/:article_id/comments', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('Not Found');
+      });
+  });
+});
+
+describe('patchArticle()', () => {
+  test('responds status 200 if article updates by incrementing vote', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 101,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('responds status 200 if article updates by decrementing vote', () => {
+    return request(app)
+      .patch('/api/articles/4')
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 4,
+          title: 'Student SUES Mitch!',
+          topic: 'mitch',
+          author: 'rogersop',
+          body: 'We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages',
+          created_at: '2020-05-06T01:14:00.000Z',
+          votes: -100,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+
+  test('patch:404 sends a 404 + error message when valid username but doesnt exist', () => {
+    return request(app)
+      .patch('/api/articles/1/comments')
+      .send({
+        inc_votes: 1,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
+  });
+
+  test('patch :400 sends a 400 + error message when missing username provided', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({
+        inco_votess : 1
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
       });
   });
 });

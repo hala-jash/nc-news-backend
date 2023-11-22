@@ -56,3 +56,16 @@ exports.insertComment = (req) => {
       return comment.rows[0];
     });
 };
+
+exports.updateArticle = (req) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  return db
+    .query(`UPDATE articles SET votes = votes + $1 WHERE Article_id =$2 RETURNING *`, [
+      inc_votes,
+      article_id,
+    ])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
