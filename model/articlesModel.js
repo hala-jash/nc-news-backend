@@ -35,14 +35,11 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
 exports.selectArticleComment = (article_id) => {
   return db
     .query(
-      `SELECT comments.comment_id, comments.votes, comments.created_at, 
-    comments.author, comments.body, comments.article_id
-    FROM comments
-    LEFT JOIN articles ON articles.article_id = comments.article_id
-    WHERE articles.article_id = $1`,
+      `SELECT * FROM comments
+    WHERE comments.article_id = $1`,
       [article_id]
     )
     .then(({ rows }) => {
-      return rows
+      return rows;
     });
 };
