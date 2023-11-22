@@ -25,5 +25,38 @@
         }
       ]
     }
+  },
+  "GET /api/articles/comments": {
+    "description": "get all comments for an article.",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 4,
+          "body": "I carry a log — yes. Is it funny to you? It is not to me.",
+          "article_id": 1,
+          "author": "icellusedkars",
+          "votes": -100,
+          "created_at": "2020-02-23T12:01:00.000Z"
+        }
+      ]
+    }
+  },
+
+  "patch /api/articles/:article_id": {
+    "description": "add a comment for an article",
+    "queries": ["article_id", "username", "body"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "comment_id": 19,
+          "body": "One day I will be a great Coder leaving the world better with my coding skills",
+          "article_id": 1,
+          "author": "butter_bridge",
+          "votes": 0,
+          "created_at": "2023-11-22T11:20:15.876Z"
+        }
+      ]
+    }
   }
 }

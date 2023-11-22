@@ -2,6 +2,7 @@ const {
   selectArticleById,
   selectArticles,
   selectArticleComment,
+  insertComment,
 } = require('../model/articlesModel');
 const { checkArticleExist } = require('../model/checkArticleModel');
 
@@ -33,6 +34,14 @@ exports.getArticleComments = (req, res, next) => {
     .then((resolvedPromises) => {
       const comments = resolvedPromises[0];
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.postArticleComments = (req, res, next) => {
+  insertComment(req)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
