@@ -22,7 +22,7 @@ describe('selectTopics()', () => {
       });
   });
   describe('error handling()', () => {
-    test('returns an error with invalid endpoint', () => {
+    test('returns an 404 error with invalid endpoint', () => {
       return request(app)
         .get('/api/topic')
         .expect(404)
@@ -73,7 +73,7 @@ describe('/api/articles/:article_id', () => {
       .get('/api/articles/apple')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request');
+        expect(response.body.msg).toBe('Bad Request');
       });
   });
 });
@@ -89,7 +89,7 @@ describe('selectArticles()', () => {
       });
   });
   describe('404: error handling', () => {
-    test('returns an error with invalid endpoint', () => {
+    test('returns an 404 error with invalid endpoint', () => {
       return request(app)
         .get('/api/blah')
         .expect(404)
@@ -124,7 +124,7 @@ describe('/api/articles/:article_id/comments', () => {
       .get('/api/articles/apple/comments')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request');
+        expect(response.body.msg).toBe('Bad Request');
       });
   });
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
@@ -141,6 +141,48 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toEqual([]);
+      });
+  });
+});
+
+describe('post:/api/articles/:article_id/comments', () => {
+  test('POST:201 insert comment sends back new comment to client ', () => {
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send({
+        username: 'butter_bridge',
+        body: 'One day I will be a great Coder leaving the world better with my coding skills',
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          author: expect.any(String),
+          body: expect.any(String),
+        });
+      });
+  });
+  test('POST:400 sends a 400 + error message when missing username provided', () => {
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send({
+        body: 'One day I will be a great Coder leaving the world better with my coding skills',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+
+  test('POST:404 sends a 404 + error message when valid username but doesnt exist', () => {
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send({
+        username: 'hala-code',
+        body: 'One day I will be a great Coder leaving the world better with my coding skills',
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
       });
   });
 });
