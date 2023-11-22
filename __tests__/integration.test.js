@@ -252,3 +252,32 @@ describe('patchArticle()', () => {
       });
   });
 });
+
+describe('deleteComment()', () => {
+  test("204: delete comment by it's comment_id", () => {
+    return request(app)
+      .delete('/api/comments/1')
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toMatchObject({});
+      });
+  });
+
+  test('POST:400 sends a 400 + error message when invalid id is provided', () => {
+    return request(app)
+      .delete('/api/comments/apple')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+
+  test('POST:404 sends a 404 + error message when missing id', () => {
+    return request(app)
+      .delete('/api/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
+  });
+});
