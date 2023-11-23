@@ -368,3 +368,38 @@ describe('404: error handling invalid endpoints', () => {
       });
   });
 });
+
+describe('/api/articles/:article_id adding comment_count', () => {
+  test('respond with a 200 status code with an individual article object with CommentCount ', () => {
+    return request(app)
+      .get('/api/articles/2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    return request(app)
+      .get('/api/articles/999')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+  test('GET:400 sends an appropriate status and error message when article_id is invalid', () => {
+    return request(app)
+      .get('/api/articles/apple')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+});
