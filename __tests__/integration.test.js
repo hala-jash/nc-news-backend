@@ -314,7 +314,6 @@ describe('selectArticles by topic query()', () => {
       .get('/api/articles?topic=mitch')
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles);
         expect(body.articles).toHaveLength(12);
         expect(body.articles[0]).toMatchObject({
           article_id: expect.any(Number),
@@ -333,7 +332,6 @@ describe('selectArticles by topic query()', () => {
       .get('/api/articles?topic=paper')
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles);
         expect(body.articles).toHaveLength(0);
         expect(body.articles).toEqual([]);
       });
@@ -343,7 +341,6 @@ describe('selectArticles by topic query()', () => {
       .get('/api/articles?topic=lion')
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles);
         expect(body.articles).toHaveLength(13);
         expect(body.articles[0]).toMatchObject({
           article_id: expect.any(Number),
