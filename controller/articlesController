@@ -6,6 +6,7 @@ const {
   updateArticle,
 } = require('../model/articlesModel');
 const { checkArticleExist } = require('../model/checkArticleModel');
+const { checkTopicExist } = require('../model/checkTopicModel');
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -17,9 +18,14 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  selectArticles(sort_by, order)
-    .then((articles) => {
+  const { sort_by, order, topic } = req.query;
+  const topicPromises = [selectArticles(sort_by, order, topic)];
+  if (order) {
+    topicPromises.push(checkTopicExist(order));
+  }
+  Promise.all(topicPromises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0];
       res.status(200).send({ articles });
     })
     .catch(next);
