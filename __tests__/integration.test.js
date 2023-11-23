@@ -263,7 +263,7 @@ describe('deleteComment()', () => {
       });
   });
 
-  test('POST:400 sends a 400 + error message when invalid id is provided', () => {
+  test('delete:400 sends a 400 + error message when invalid id is provided', () => {
     return request(app)
       .delete('/api/comments/apple')
       .expect(400)
@@ -272,12 +272,39 @@ describe('deleteComment()', () => {
       });
   });
 
-  test('POST:404 sends a 404 + error message when missing id', () => {
+  test('delete:404 sends a 404 + error message when id is not found ', () => {
     return request(app)
       .delete('/api/comments')
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('Not Found');
       });
+  });
+});
+
+
+describe('selectUsers()', () => {
+  test('Selecting all users', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toHaveLength(4);
+        expect(body.users[0]).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  describe('error handling()', () => {
+    test('returns an error with invalid endpoint', () => {
+      return request(app)
+        .get('/api/user')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found');
+        });
+    });
   });
 });
