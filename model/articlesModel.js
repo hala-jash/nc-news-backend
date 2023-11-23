@@ -17,9 +17,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     LEFT JOIN comments ON articles.article_id = comments.article_id `;
   const validSortBy = ['title', 'author', 'topic', 'votes', 'created_at'];
   const validOrder = ['ASC', 'DESC'];
-  const validTopics = ['cats', 'mitch', 'paper'];
-
-  if (topic && validTopics.includes(topic)) {
+  if (topic) {
     queryString += `WHERE articles.topic = '${topic}' `;
   }
 
@@ -67,10 +65,10 @@ exports.updateArticle = (req) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
   return db
-    .query(`UPDATE articles SET votes = votes + $1 WHERE Article_id =$2 RETURNING *`, [
-      inc_votes,
-      article_id,
-    ])
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE Article_id =$2 RETURNING *`,
+      [inc_votes, article_id]
+    )
     .then(({ rows }) => {
       return rows[0];
     });

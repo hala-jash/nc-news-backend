@@ -4,6 +4,7 @@ const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
 const data = require('../db/data/test-data');
 const jsonFile = require('../endpoints.json');
+const articles = require('../db/data/test-data/articles.js');
 
 beforeAll(() => seed(data));
 afterAll(() => db.end());
@@ -281,7 +282,6 @@ describe('deleteComment()', () => {
       });
   });
 });
-
 describe('selectUsers()', () => {
   test('Selecting all users', () => {
     return request(app)
@@ -307,7 +307,6 @@ describe('selectUsers()', () => {
     });
   });
 });
-
 describe('selectArticles by topic query()', () => {
   test('200:Selecting all topics with valid topic query', () => {
     return request(app)
@@ -315,15 +314,17 @@ describe('selectArticles by topic query()', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toHaveLength(12);
-        expect(body.articles[0]).toMatchObject({
-          article_id: expect.any(Number),
-          title: expect.any(String),
-          topic: expect.any(String),
-          body: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          article_img_url: expect.any(String),
-          comment_count: expect.any(String),
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
         });
       });
   });
@@ -336,32 +337,34 @@ describe('selectArticles by topic query()', () => {
         expect(body.articles).toEqual([]);
       });
   });
-  test('200: Return all article with invalid topic query', () => {
+  test('200: Return all article with ommitted topic query', () => {
     return request(app)
-      .get('/api/articles?topic=lion')
+      .get('/api/articles')
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toHaveLength(13);
-        expect(body.articles[0]).toMatchObject({
-          article_id: expect.any(Number),
-          title: expect.any(String),
-          topic: expect.any(String),
-          body: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          article_img_url: expect.any(String),
-          comment_count: expect.any(String),
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
         });
       });
   });
-  describe('404: error handling', () => {
-    test('returns an error with invalid article endpoint', () => {
-      return request(app)
-        .get('/api/banana')
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Not Found');
-        });
-    });
+});
+describe('404: error handling invalid endpoints', () => {
+  test('returns an error with invalid article endpoint', () => {
+    return request(app)
+      .get('/api/banana')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
   });
 });
