@@ -10,15 +10,21 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
+exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
   let queryString = `SELECT articles.*,
     COUNT(comments.comment_id) AS comment_count
     FROM articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY
-    articles.article_id `;
+    LEFT JOIN comments ON articles.article_id = comments.article_id `;
   const validSortBy = ['title', 'author', 'topic', 'votes', 'created_at'];
   const validOrder = ['ASC', 'DESC'];
+  const validTopics = ['cats', 'mitch', 'paper'];
+
+  if (topic && validTopics.includes(topic)) {
+    queryString += `WHERE articles.topic = '${topic}' `;
+  }
+
+  queryString += `GROUP BY articles.article_id `;
+
   if (
     sort_by &&
     order &&

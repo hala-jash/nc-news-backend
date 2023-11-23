@@ -244,7 +244,7 @@ describe('patchArticle()', () => {
     return request(app)
       .patch('/api/articles/1')
       .send({
-        inco_votess : 1
+        inco_votess: 1,
       })
       .expect(400)
       .then(({ body }) => {
@@ -282,7 +282,6 @@ describe('deleteComment()', () => {
   });
 });
 
-
 describe('selectUsers()', () => {
   test('Selecting all users', () => {
     return request(app)
@@ -301,6 +300,67 @@ describe('selectUsers()', () => {
     test('returns an error with invalid endpoint', () => {
       return request(app)
         .get('/api/user')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found');
+        });
+    });
+  });
+});
+
+describe('selectArticles by topic query()', () => {
+  test('200:Selecting all topics with valid topic query', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.articles);
+        expect(body.articles).toHaveLength(12);
+        expect(body.articles[0]).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  test('200: Return [] with valid topic query but no article with this query', () => {
+    return request(app)
+      .get('/api/articles?topic=paper')
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.articles);
+        expect(body.articles).toHaveLength(0);
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test('200: Return all article with invalid topic query', () => {
+    return request(app)
+      .get('/api/articles?topic=lion')
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.articles);
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles[0]).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  describe('404: error handling', () => {
+    test('returns an error with invalid article endpoint', () => {
+      return request(app)
+        .get('/api/banana')
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('Not Found');
