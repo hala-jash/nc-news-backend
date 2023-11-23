@@ -368,3 +368,16 @@ describe('404: error handling invalid endpoints', () => {
       });
   });
 });
+
+describe('/api/articles/:article_id adding comment_count', () => {
+  test('respond with a 200 status code with an individual article object with CommentCount ', () => {
+    return request(app)
+      .get('/api/articles/3')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          comment_count: expect.any(String),
+        });
+      });
+  });
+});
