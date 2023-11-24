@@ -20,6 +20,6 @@ exports.handle404 = (req, res, next) => {
   res.status(404).send({ msg: 'Not Found' });
 };
 
-exports.handle500 = (err, req, res, next) => {
+exports.handle500 = (req, res, next) => {
   res.status(500).send({ msg: 'Internal Server Error' });
 };
