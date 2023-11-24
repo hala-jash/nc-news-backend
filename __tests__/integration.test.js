@@ -229,7 +229,7 @@ describe('patchArticle()', () => {
       });
   });
 
-  test('patch:404 sends a 404 + error message when valid username but doesnt exist', () => {
+  test('patch:404 sends a 404 + error message when valid votes but doesnt exist', () => {
     return request(app)
       .patch('/api/articles/1/comments')
       .send({
@@ -241,7 +241,7 @@ describe('patchArticle()', () => {
       });
   });
 
-  test('patch :400 sends a 400 + error message when missing username provided', () => {
+  test('patch :400 sends a 400 + error message when object request in invalid', () => {
     return request(app)
       .patch('/api/articles/1')
       .send({
@@ -369,7 +369,7 @@ describe('404: error handling invalid endpoints', () => {
   });
 });
 
-describe('/api/articles/:article_id adding comment_count', () => {
+describe('get /api/articles/:article_id adding comment_count', () => {
   test('respond with a 200 status code with an individual article object with CommentCount ', () => {
     return request(app)
       .get('/api/articles/3')
@@ -394,7 +394,7 @@ describe('GET /api/articles sort_by queries', () => {
   });
 });
 
-describe('/api/users/:username', () => {
+describe('GET /api/users/:username', () => {
   test('respond with a 200 status code with an individual user object ', () => {
     return request(app)
       .get('/api/users/icellusedkars')
@@ -423,4 +423,52 @@ describe('/api/users/:username', () => {
         expect(response.body.msg).toBe('Bad Request');
       });
   });
+});
+
+describe('PATCH /api/comments/:comment_id', () => {
+  test('responds status 200 if comments updates by incrementing vote', () => {
+    return request(app)
+      .patch('/api/comments/3')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 3,
+          body: 'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.',
+          article_id: 1,
+          author: 'icellusedkars',
+          votes: 101,
+          created_at: '2020-03-01T01:13:00.000Z',
+        });
+      });
+  });
+  test('responds status 200 if comments updates by decrementing vote', () => {
+    return request(app)
+      .patch('/api/comments/4')
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 4,
+          body: ' I carry a log — yes. Is it funny to you? It is not to me.',
+          article_id: 1,
+          author: 'icellusedkars',
+          votes: -200,
+          created_at: '2020-02-23T12:01:00.000Z',
+        });
+      });
+  });
+
+  test('patch:404 error message when valid object but no votes', () => {
+    return request(app)
+      .patch('/api/comments/1/comments')
+      .send({
+        inc_votes: 1,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
+  });
+
 });
