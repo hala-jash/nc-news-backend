@@ -532,28 +532,34 @@ describe('post:/api/articles', () => {
       });
   });
 });
-
-// test('POST:400 sends a 400 + error message when missing username provided', () => {
-//   return request(app)
-//     .post('/api/articles/1/comments')
-//     .send({
-//       body: 'One day I will be a great Coder leaving the world better with my coding skills',
-//     })
-//     .expect(400)
-//     .then(({ body }) => {
-//       expect(body.msg).toBe('Bad Request');
-//     });
-// });
-
-// test('POST:404 sends a 404 + error message when valid username but doesnt exist', () => {
-//   return request(app)
-//     .post('/api/articles/1/comments')
-//     .send({
-//       username: 'hala-code',
-//       body: 'One day I will be a great Coder leaving the world better with my coding skills',
-//     })
-//     .expect(404)
-//     .then(({ body }) => {
-//       expect(body.msg).toBe('Not Found');
-//     });
-// });
+describe('POST /api/topics', () => {
+  test('POST:201 insert topics sends back new article to client', () => {
+    const newTopic = {
+      slug: 'Hala',
+      description: 'Getting better at coding and debugging lallalala',
+    };
+    return request(app)
+      .post('/api/topics')
+      .send(newTopic)
+      .expect(201)
+      .then((response) => {
+        console.log(response.body.topic);
+        expect(response.body.topic).toMatchObject({
+         slug : 'Hala',
+          description:'Getting better at coding and debugging lallalala',
+        });
+      });
+  });
+  test('POST:400 sends a 400 + error message when missing slug', () => {
+    const newTopic = {
+      description: 'Getting better at coding and debugging lallalala',
+    };
+    return request(app)
+      .post('/api/topics')  
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+});
