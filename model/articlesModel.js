@@ -93,3 +93,13 @@ exports.insertArticle = (req) => {
       return article.rows[0];
     });
 };
+
+exports.deleteArticleModel = (req) => {
+  const { article_id } = req.params;
+  if (isNaN(+article_id)) {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  }
+  return db.query(`DELETE FROM articles WHERE article_id = $1 RETURNING *`, [
+    article_id
+  ]);
+};

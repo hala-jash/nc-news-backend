@@ -5,6 +5,7 @@ const {
   insertComment,
   updateArticle,
   insertArticle,
+  deleteArticleModel,
 } = require('../model/articlesModel');
 const { checkArticleExist } = require('../model/checkArticleModel');
 const { checkTopicExist } = require('../model/checkTopicModel');
@@ -65,6 +66,14 @@ exports.postArticle = (req, res, next) => {
   insertArticle(req)
     .then((article) => {
       res.status(201).send({ article });
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  deleteArticleModel(req)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };

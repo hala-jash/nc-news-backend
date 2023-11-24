@@ -543,7 +543,6 @@ describe('POST /api/topics', () => {
       .send(newTopic)
       .expect(201)
       .then((response) => {
-        console.log(response.body.topic);
         expect(response.body.topic).toMatchObject({
          slug : 'Hala',
           description:'Getting better at coding and debugging lallalala',
@@ -563,3 +562,4 @@ describe('POST /api/topics', () => {
       });
   });
 });
+
