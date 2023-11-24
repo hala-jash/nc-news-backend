@@ -7,14 +7,12 @@ exports.selectTopics = (req) => {
 };
 exports.insertTopic = (req) => {
   const { description, slug } = req.body;
-  console.log(slug, description);
   return db
     .query(
       `INSERT INTO topics (description,slug) VALUES ($1, $2) RETURNING *`,
       [description, slug]
     )
     .then((topic) => {
-      console.log(topic);
       return topic.rows[0];
     });
 };

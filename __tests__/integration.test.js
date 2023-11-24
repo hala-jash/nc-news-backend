@@ -563,3 +563,31 @@ describe('POST /api/topics', () => {
   });
 });
 
+describe('DELETE /api/articles/:article_id', () => {
+  test("204: delete article by it's article_id", () => {
+    return request(app)
+      .delete('/api/articles/4')
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toMatchObject({});
+      });
+  });
+
+  test('delete:400 sends a 400 + error message when invalid id is provided', () => {
+    return request(app)
+      .delete('/api/articles/apple')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+
+  test('delete:404 sends a 404 + error message when id is not found ', () => {
+    return request(app)
+      .delete('/api/articles')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
+  });
+})
