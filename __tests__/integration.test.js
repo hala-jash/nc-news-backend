@@ -79,7 +79,7 @@ describe('/api/articles/:article_id', () => {
   });
 });
 
-describe('selectArticles()', () => {
+describe('GET /api/articles - default queries', () => {
   test('Selecting all Articles with default date in DESC order', () => {
     return request(app)
       .get('/api/articles')
@@ -378,6 +378,19 @@ describe('/api/articles/:article_id adding comment_count', () => {
         expect(body.article).toMatchObject({
           comment_count: expect.any(String),
         });
+      });
+  });
+});
+
+describe('GET /api/articles sort_by queries', () => {
+  test('Selecting all Articles with votes', () => {
+    return request(app)
+      .get('/api/articles?sort_by=author')
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.articles);
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles).toBeSortedBy('author', { descending: true });
       });
   });
 });
