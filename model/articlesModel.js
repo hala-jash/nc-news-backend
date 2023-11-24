@@ -17,7 +17,6 @@ exports.selectArticleById = (article_id) => {
       return result.rows[0];
     });
 };
-
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
   let queryString = `SELECT articles.*,
     COUNT(comments.comment_id) AS comment_count
@@ -44,6 +43,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     return rows;
   });
 };
+
 exports.selectArticleComment = (article_id) => {
   return db
     .query(
@@ -79,5 +79,17 @@ exports.updateArticle = (req) => {
     )
     .then(({ rows }) => {
       return rows[0];
+    });
+};
+
+exports.insertArticle = (req) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+  return db
+    .query(
+      `INSERT INTO articles (title, topic, author, body ,article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [title, topic, author, body, article_img_url]
+    )
+    .then((article) => {
+      return article.rows[0];
     });
 };
