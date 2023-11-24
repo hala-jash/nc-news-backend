@@ -4,6 +4,7 @@ const {
   selectArticleComment,
   insertComment,
   updateArticle,
+  insertArticle,
 } = require('../model/articlesModel');
 const { checkArticleExist } = require('../model/checkArticleModel');
 const { checkTopicExist } = require('../model/checkTopicModel');
@@ -57,6 +58,13 @@ exports.patchArticle = (req, res, next) => {
   updateArticle(req)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+exports.postArticle = (req, res, next) => {
+  insertArticle(req)
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

@@ -9,7 +9,7 @@ const articles = require('../db/data/test-data/articles.js');
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 
-describe('selectTopics()', () => {
+describe('GET /api/topics', () => {
   test('Selecting all Topics', () => {
     return request(app)
       .get('/api/topics')
@@ -34,7 +34,7 @@ describe('selectTopics()', () => {
   });
 });
 
-describe('getApis()', () => {
+describe('GET /api', () => {
   test('return Json object with all apis endpoint in file ', () => {
     return request(app)
       .get('/api')
@@ -189,7 +189,7 @@ describe('post:/api/articles/:article_id/comments', () => {
   });
 });
 
-describe('patchArticle()', () => {
+describe('PATCH /api/articles/:article_id', () => {
   test('responds status 200 if article updates by incrementing vote', () => {
     return request(app)
       .patch('/api/articles/1')
@@ -254,7 +254,7 @@ describe('patchArticle()', () => {
   });
 });
 
-describe('deleteComment()', () => {
+describe('DELETE /api/comments/:comment_id', () => {
   test("204: delete comment by it's comment_id", () => {
     return request(app)
       .delete('/api/comments/1')
@@ -282,7 +282,7 @@ describe('deleteComment()', () => {
       });
   });
 });
-describe('selectUsers()', () => {
+describe('GET /api/users', () => {
   test('Selecting all users', () => {
     return request(app)
       .get('/api/users')
@@ -307,7 +307,7 @@ describe('selectUsers()', () => {
     });
   });
 });
-describe('selectArticles by topic query()', () => {
+describe('GET /api/articles (topic query)', () => {
   test('200:Selecting all topics with valid topic query', () => {
     return request(app)
       .get('/api/articles?topic=mitch')
@@ -470,5 +470,90 @@ describe('PATCH /api/comments/:comment_id', () => {
         expect(body.msg).toBe('Not Found');
       });
   });
-
 });
+
+describe('post:/api/articles', () => {
+  test('POST:201 insert article sends back new article to client', () => {
+    const newArticle = {
+      title: 'Hala',
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'ADVANCED: POST /api/articles',
+      article_img_url:
+        'https://contentstatic.techgig.com/photo/86001236/coding-for-students-learn-with-these-7-apps.jpg?10556',
+    };
+    return request(app)
+      .post('/api/articles')
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 14,
+          title: 'Hala',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'ADVANCED: POST /api/articles',
+          votes: 0,
+          article_img_url:
+            'https://contentstatic.techgig.com/photo/86001236/coding-for-students-learn-with-these-7-apps.jpg?10556',
+        });
+      });
+  });
+  test('POST:400 sends a 400 + error message when missing title provided', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        topic: 'mitch',
+        author: 'butter_bridge',
+        body: 'ADVANCED: POST /api/articles',
+        article_img_url:
+          'https://contentstatic.techgig.com/photo/86001236/coding-for-students-learn-with-these-7-apps.jpg?10556',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+
+  test('POST:404 sends a 404 + error message when valid title and author but dont exist', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        title: 'Hala',
+        topic: 'Lion',
+        author: 'FUN-DAY',
+        body: 'ADVANCED: POST /api/articles',
+        article_img_url:
+          'https://contentstatic.techgig.com/photo/86001236/coding-for-students-learn-with-these-7-apps.jpg?10556',
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not Found');
+      });
+  });
+});
+
+// test('POST:400 sends a 400 + error message when missing username provided', () => {
+//   return request(app)
+//     .post('/api/articles/1/comments')
+//     .send({
+//       body: 'One day I will be a great Coder leaving the world better with my coding skills',
+//     })
+//     .expect(400)
+//     .then(({ body }) => {
+//       expect(body.msg).toBe('Bad Request');
+//     });
+// });
+
+// test('POST:404 sends a 404 + error message when valid username but doesnt exist', () => {
+//   return request(app)
+//     .post('/api/articles/1/comments')
+//     .send({
+//       username: 'hala-code',
+//       body: 'One day I will be a great Coder leaving the world better with my coding skills',
+//     })
+//     .expect(404)
+//     .then(({ body }) => {
+//       expect(body.msg).toBe('Not Found');
+//     });
+// });
