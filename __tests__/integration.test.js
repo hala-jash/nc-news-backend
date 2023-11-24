@@ -388,9 +388,39 @@ describe('GET /api/articles sort_by queries', () => {
       .get('/api/articles?sort_by=author')
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles);
         expect(body.articles).toHaveLength(13);
         expect(body.articles).toBeSortedBy('author', { descending: true });
+      });
+  });
+});
+
+describe('/api/users/:username', () => {
+  test('respond with a 200 status code with an individual user object ', () => {
+    return request(app)
+      .get('/api/users/icellusedkars')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toMatchObject({
+          username: expect.any(String),
+          avatar_url: expect.any(String),
+          name: expect.any(String),
+        });
+      });
+  });
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent username', () => {
+    return request(app)
+      .get('/api/users/Rainy')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+  test('GET:400 sends an appropriate status and error message when username is invalid', () => {
+    return request(app)
+      .get('/api/users/3')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
       });
   });
 });
