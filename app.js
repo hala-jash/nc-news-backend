@@ -6,31 +6,20 @@ const {
   handle404,
   handle500,
 } = require('./errorHandle');
-const { getTopics } = require('./controller/topicController');
-const { getApis } = require('./controller/apiController');
-const { getArticleById } = require('./controller/articlesController');
-const { getArticles } = require('./controller/articlesController');
-const { getArticleComments } = require('./controller/articlesController');
-const { postArticleComments } = require('./controller/articlesController');
-const { patchArticle } = require('./controller/articlesController');
-const { deleteComment } = require('./controller/commentsController');
-const { getUsers } = require('./controller/usersController');
+
+const topicsRouter = require('./routes/topic-router-js');
+const articleRouter = require('./routes/articles-router');
+const commentsRouter = require('./routes/comments-router');
+const apiRouter = require('./routes/api-router');
+const userRouter = require('./routes/user-router');
 
 app.use(express.json());
 
-app.get('/api/topics', getTopics);
-//apis 
-app.get('/api', getApis);
-// articles 
-app.get('/api/articles', getArticles);
-app.get('/api/articles/:article_id', getArticleById);
-app.get('/api/articles/:article_id/comments', getArticleComments);
-app.post('/api/articles/:article_id/comments', postArticleComments);
-app.patch('/api/articles/:article_id', patchArticle);
-// comments
-app.delete('/api/comments/:comment_id', deleteComment);
-// users
-app.get('/api/users', getUsers);
+app.use('/api', apiRouter);
+app.use('/api/topics', topicsRouter);
+app.use('/api/articles', articleRouter);
+app.use('/api/comments', commentsRouter);
+app.use('/api/users', userRouter);
 
 app.all('*', handle404);
 app.use(handlePsqlErrors);
