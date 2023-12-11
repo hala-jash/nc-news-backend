@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const {
   handlePsqlErrors,
   handleCustomErrors,
@@ -14,7 +15,7 @@ const apiRouter = require('./routes/api-router');
 const userRouter = require('./routes/user-router');
 
 app.use(express.json());
-
+app.use(cors());
 app.use('/api', apiRouter);
 app.use('/api/topics', topicsRouter);
 app.use('/api/articles', articleRouter);
